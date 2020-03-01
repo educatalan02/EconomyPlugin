@@ -16,6 +16,8 @@ namespace EconomyPlugin
     {
         public DatabaseManager Database;
         public static EconomyPlugin Instance;
+
+        //UpdateBalance Event
         public delegate void PlayerUpdateBalance(UnturnedPlayer player, decimal balance);
         public event PlayerUpdateBalance OnBalanceUpdate;
 
@@ -28,6 +30,8 @@ namespace EconomyPlugin
             UnturnedPlayerEvents.OnPlayerUpdateExperience += OnUpdateExperience;
         }
 
+
+        //UpdateExperience Event
         private void OnUpdateExperience(UnturnedPlayer player, uint experience)
         {
 
@@ -35,6 +39,8 @@ namespace EconomyPlugin
             UpdateUI(player);
         }
 
+
+        //UpdateUI Method
         private void UpdateUI(UnturnedPlayer player)
         {
             EffectManager.sendUIEffect(Configuration.Instance.EffectId, short.Parse(Configuration.Instance.EffectId.ToString()), player.CSteamID, true, player.Experience.ToString());
@@ -42,7 +48,7 @@ namespace EconomyPlugin
 
         private void OnPlayerConnected(UnturnedPlayer player)
         {
-            Database.CheckSetupAccount(player);
+            Database.CheckSetupAccount(player); //Setup account!
         }
 
         protected override void Unload()
