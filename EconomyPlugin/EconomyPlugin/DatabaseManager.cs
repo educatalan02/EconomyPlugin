@@ -56,7 +56,11 @@ namespace EconomyPlugin
 
                 if (exists == 0)
                 {
-                    player.Experience = (uint)EconomyPlugin.Instance.Configuration.Instance.DefaultMoney;
+                    if(EconomyPlugin.Instance.Configuration.Instance.UsingXP)
+                    {
+                        player.Experience = (uint)EconomyPlugin.Instance.Configuration.Instance.DefaultMoney;
+                    }
+                    
                     command.CommandText = "insert ignore into `" + EconomyPlugin.Instance.Configuration.Instance.DatabaseTableName + "` (balance,steamId,lastUpdated) values(" + EconomyPlugin.Instance.Configuration.Instance.DefaultMoney + ",'" + player.CSteamID.ToString() + "',now())";
                     connection.Open();
                     command.ExecuteNonQuery();
@@ -84,6 +88,50 @@ namespace EconomyPlugin
             }
             return connection;
         }
+
+        public ulong SearchOfflinePlayer(string id)
+        {
+            ulong output = 0;
+            try
+            {
+                MySqlConnection connection = createConnection();
+                MySqlCommand command = connection.CreateCommand();
+                command.CommandText = "select `steamId` from `" + EconomyPlugin.Instance.Configuration.Instance.DatabaseTableName + "` where `steamId` = '" + id.ToString() + "';";
+                connection.Open();
+                object result = command.ExecuteScalar();
+                
+
+                if (result != null) ulong.TryParse(result.ToString(), out output);
+                connection.Close();
+            }
+            catch (Exception ex)
+            {
+                Logger.LogException(ex);
+            }
+            return output;
+        }
+
+        public decimal IncreaseBalance(UnturnedPlayer id, decimal increaseBy)
+        {
+            decimal output = 0;
+            try
+            {
+                MySqlConnection connection = createConnection();
+                MySqlCommand command = connection.CreateCommand();
+                command.CommandText = "update `" + EconomyPlugin.Instance.Configuration.Instance.DatabaseTableName + "` set `balance` = balance + (" + increaseBy + ") where `steamId` = '" + id.ToString() + "'; select `balance` from `" + Uconomy.Instance.Configuration.Instance.DatabaseTableName + "` where `steamId` = '" + id.ToString() + "'";
+                connection.Open();
+                object result = command.ExecuteScalar();
+                if (result != null) Decimal.TryParse(result.ToString(), out output);
+                connection.Close();
+                EconomyPlugin.Instance.BalanceUpdated(id, decimal.Parse(increaseBy.ToString()));
+            }
+            catch (Exception ex)
+            {
+                Logger.LogException(ex);
+            }
+            return output;
+        }
+
         public decimal GetBalance(string id)
         {
             decimal output = 0;
