@@ -32,7 +32,10 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="BalanceCommand.cs" />
     <Compile Include="BankAccount.cs" />
+    <Compile Include="BankPayCommand.cs" />
+    <Compile Include="ChangeCommand.cs" />
     <Compile Include="DatabaseManager.cs" />
     <Compile Include="EconomyPlugin.cs" />
     <Compile Include="Configuration.cs" />

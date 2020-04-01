@@ -11,19 +11,19 @@ using System.Threading.Tasks;
 
 namespace EconomyPlugin
 {
-    public class PayCommand : IRocketCommand
+    public class BankPayCommand : IRocketCommand
     {
         public AllowedCaller AllowedCaller => throw new NotImplementedException();
 
-        public string Name => "pay";
+        public string Name => "bankpay";
 
         public string Help => Syntax;
 
         public string Syntax => "Syntax: /pay <player> <quantity>";
 
-        public List<string> Aliases => new List<string>();
+        public List<string> Aliases => new List<string> { "apay"  };
 
-        public List<string> Permissions => new List<string>() { "EconomyPlugin.pay" };
+        public List<string> Permissions => new List<string>() { "EconomyPlugin.bankpay" };
 
         public void Execute(IRocketPlayer caller, string[] command)
         {
@@ -35,7 +35,7 @@ namespace EconomyPlugin
                 UnturnedChat.Say(caller, Syntax);
                 return;
             }
-            if(otherPlayer == null || otherPlayerID == 0)
+            if (otherPlayer == null || otherPlayerID == 0)
             {
                 UnturnedChat.Say(caller, EconomyPlugin.Instance.Translate("player_not_found"));
                 return;
@@ -54,19 +54,8 @@ namespace EconomyPlugin
                 }
                 else
                 {
-                    decimal myBalance = EconomyPlugin.Instance.Database.GetBalance(caller.Id);
-                    if ((myBalance - amount) <= 0)
-                    {
-                        UnturnedChat.Say(caller, EconomyPlugin.Instance.Translate("not_enought_money"));
-                        return;
-                    }
-                    else
-                    {
-                        EconomyPlugin.Instance.Database.IncreaseBalance(player, -amount);
-                        UnturnedChat.Say(caller, EconomyPlugin.Instance.Translate("pay", amount, EconomyPlugin.Instance.Configuration.Instance.MoneySymbol, otherPlayer.CharacterName));
-                        EconomyPlugin.Instance.Database.IncreaseBalance(otherPlayer, amount);
-
-                    }
+                    EconomyPlugin.Instance.Database.IncreaseBalance(otherPlayer, amount);
+                    UnturnedChat.Say(caller, EconomyPlugin.Instance.Translate("pay", amount, EconomyPlugin.Instance.Configuration.Instance.MoneySymbol, otherPlayer.CharacterName));
                 }
             }
         }
